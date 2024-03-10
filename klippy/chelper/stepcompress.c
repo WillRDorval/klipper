@@ -612,8 +612,6 @@ stepcompress_had_position(struct stepcompress *scx, struct stepcompress *scy, in
                     }
                 }
             }
-        } else {
-            break;
         }
         if ((hsy->node.next != &(scy->history_list.root))) {
             if (hsy->last_clock < cutoff){
@@ -629,9 +627,9 @@ stepcompress_had_position(struct stepcompress *scx, struct stepcompress *scy, in
                     }
                 }
             }
-        } else {
-            break;
         }
+
+
         // both nodes cover the correct point in space
 
         if (hsx->first_clock > hsy->last_clock) {
@@ -708,6 +706,8 @@ stepcompress_had_position(struct stepcompress *scx, struct stepcompress *scy, in
                     hsy = list_next_entry(hsx, node);
                     continue;
                 }
+
+                return (MAX(cx_max, cy_min)+MIN(cx_min, cy_max))/2;
             }
         } else{
             if (cx_max > cx_min){
@@ -719,6 +719,7 @@ stepcompress_had_position(struct stepcompress *scx, struct stepcompress *scy, in
                     hsy = list_next_entry(hsx, node);
                     continue;
                 }
+                return (MAX(cx_min, cy_max)+MIN(cx_max, cy_min))/2;
             } else {
                 if (cy_min < cx_max){
                     hsx = list_next_entry(hsx, node);
@@ -728,10 +729,13 @@ stepcompress_had_position(struct stepcompress *scx, struct stepcompress *scy, in
                     hsy = list_next_entry(hsx, node);
                     continue;
                 }
+                return (MAX(cx_max, cy_max)+MIN(cx_min, cy_min))/2;
             }
         }  
+        if ((hsx->node.next != &(scx->history_list.root))&&(hsy->node.next != &(scy->history_list.root))) {
+            break;
+        }
     }
-
 
 }
 // Search history of moves to find a past position at a given clock
