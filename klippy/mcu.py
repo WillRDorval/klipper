@@ -588,6 +588,11 @@ class MCU:
         printer.register_event_handler("klippy:connect", self._connect)
         printer.register_event_handler("klippy:shutdown", self._shutdown)
         printer.register_event_handler("klippy:disconnect", self._disconnect)
+
+        # feedback init
+        self._is_synced =  False
+        self._mcu_start = 0
+        self._local_start = 0
     # Serial callbacks
     def _handle_mcu_stats(self, params):
         count = params['count']
@@ -968,6 +973,13 @@ class MCU:
         last_stats = {k:(float(v) if '.' in v else int(v)) for k, v in parts}
         self._get_status_info['last_stats'] = last_stats
         return False, '%s: %s' % (self._name, stats)
+    
+    def syncronize_clock(self, scx, scy, x, y):
+        mcu_clock = self._ffi_lib.stepcompress_had_position(scx, scy, x, y, 20, self._clocksync.print_time_to_clock(3))
+        self._mcu_start = mcu_clock
+        self._local_start = self._reactor.monotonic()
+
+    def test_position()
 
 Common_MCU_errors = {
     ("Timer too close",): """
