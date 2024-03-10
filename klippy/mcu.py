@@ -5,6 +5,8 @@
 # This file may be distributed under the terms of the GNU GPLv3 license.
 import sys, os, zlib, logging, math
 import serialhdl, msgproto, pins, chelper, clocksync
+import RPi.GPIO as GPIO # Python Library Needed
+from time import sleep
 
 class error(Exception):
     pass
@@ -469,6 +471,7 @@ class MCU_adc:
         self._oid = self._callback = None
         self._mcu.register_config_callback(self._build_config)
         self._inv_max_adc = 0.
+
     def get_mcu(self):
         return self._mcu
     def setup_minmax(self, sample_time, sample_count,
@@ -588,6 +591,78 @@ class MCU:
         printer.register_event_handler("klippy:connect", self._connect)
         printer.register_event_handler("klippy:shutdown", self._shutdown)
         printer.register_event_handler("klippy:disconnect", self._disconnect)
+
+    # GPIO Setup into mcu.py file
+    
+    def rotary_encoders_setup(self):
+
+        # Defining the GPIO Pins for the Rotary Encoders
+        Encoder_A1 = 5	# Encoder 1: GPIO Pin for Encoder Input A
+        Encoder_B1 = 6	# Encoder 1: GPIO Pin for Encoder Input B
+
+        Encoder_A2 = 13	# Encoder 2: GPIO Pin for Encoder Input A
+        Encoder_B2 = 27	# Encoder 2: GPIO Pin for Encoder Input B
+
+        Encoder_A3 = 22	# Encoder 3: GPIO Pin for Encoder Input A
+        Encoder_B3 = 25 # Encoder 3: GPIO Pin for Encoder Input B
+
+        # Initializing the Encoder Count Variables 
+        self.Encoder_count1 = 0	# Rotary Encoder 1 Counter 
+        self.Encoder_count2 = 0	# Rotary Encoder 2 Counter 
+        self.Encoder_count3 = 0	# Rotary Encoder 3 Counter
+        
+        # GPIO Setup
+        GPIO.setwarnings(True)
+        GPIO.setmode(GPIO.BCM)
+
+        # Each Rotary Encoder will have 2 GPIO Pins, one for each input basically
+        # GPIO pins are defined here that will be connected to the rotary encoder
+        # The rotational movements of the encoder shaft will be found with the use of these pins
+        GPIO.setup(Encoder_A1, GPIO.IN)
+        GPIO.setup(Encoder_B1, GPIO.IN)
+        
+        GPIO.setup(Encoder_A2, GPIO.IN)
+        GPIO.setup(Encoder_B2, GPIO.IN)
+        
+        GPIO.setup(Encoder_A3, GPIO.IN)
+        GPIO.setup(Encoder_B3, GPIO.IN)
+
+        # Registering the Interrupt Handlers
+        # Interrupts would be used for the setting up of the callback thread for the A and B inputs of each encoder
+        GPIO.add_event_detect(Encoder_A1, GPIO.RISING, callback=self.interrupt_xup, bouncetime=10)	# The interrupts should be triggered when there is a rising edge detected on the GPIO pins
+        GPIO.add_event_detect(Encoder_B1, GPIO.RISING, callback=self.interrupt_xdown, bouncetime=10)
+        
+        GPIO.add_event_detect(Encoder_A2, GPIO.RISING, callback=self.interrupt_yup, bouncetime=10)
+        GPIO.add_event_detect(Encoder_B2, GPIO.RISING, callback=self.interrupt_ydown, bouncetime=10)
+        
+        GPIO.add_event_detect(Encoder_A3, GPIO.RISING, callback=self.interrupt_zup, bouncetime=10)
+        GPIO.add_event_detect(Encoder_B3, GPIO.RISING, callback=self.interrupt_zdown, bouncetime=10)
+
+    # Two parameters in the Interrupt Functions:
+    # self: Refers to the instance of the MCU class, in order to get access to the methods and instance variables of the MCU class 
+    # channel: Represents the GPIO pin channel triggering the interrupt, and gives information about which encoder's input has caused the interrupt shown  
+
+    # Up/Down Functions that update the rotary encoder counts based on the interrupt events for the X axis
+    def interrupt_xup(self, channel):
+        self.Encoder_count1 += 1
+            
+    def interrupt_xdown(self, channel):
+        self.Encoder_count1 -= 1
+            
+    # Up/Down Functions that update the rotary encoder counts based on the interrupt events for the Y axis
+    def interrupt_yup(self, channel):
+        self.Encoder_count2 += 1
+            
+    def interrupt_ydown(self, channel):
+        self.Encoder_count2 -= 1
+
+    # Up/Down Functions that update the rotary encoder counts based on the interrupt events for the Z axis
+    def interrupt_zup(self, channel):
+        self.Encoder_count3 += 1
+            
+    def interrupt_zdown(self, channel):
+        self.Encoder_count3 -= 1
+
     # Serial callbacks
     def _handle_mcu_stats(self, params):
         count = params['count']
