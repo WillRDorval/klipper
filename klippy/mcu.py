@@ -8,6 +8,8 @@ import serialhdl, msgproto, pins, chelper, clocksync
 import RPi.GPIO as GPIO # Python Library Needed
 from time import sleep
 
+ENC_PULSES_PER_STEP = 3
+
 class error(Exception):
     pass
 
@@ -592,6 +594,9 @@ class MCU:
         printer.register_event_handler("klippy:shutdown", self._shutdown)
         printer.register_event_handler("klippy:disconnect", self._disconnect)
 
+        #register homing response callback
+        printer.register_event__handler("homing:complete", self._register_homing)
+
     # GPIO Setup into mcu.py file
     
     def rotary_encoders_setup(self):
@@ -1017,6 +1022,12 @@ class MCU:
         if ret:
             raise error("Internal error in MCU '%s' stepcompress"
                         % (self._name,))
+        kin = self._printer.lookup_object('toolhead').kin
+        sx = kin.rails[0].get_steppers()[0]._stepqueue
+        sy = kin.rails[0].get_steppers()[0]._stepqueue
+        x, y = self.Encoder_count1/ENC_PULSES_PER_STEP, self.Encoder_count2/ENC_PULSES_PER_STEP
+        self.syncronize_clock(sx, sy, x, y)
+
     def check_active(self, print_time, eventtime):
         if self._steppersync is None:
             return
@@ -1050,11 +1061,27 @@ class MCU:
         return False, '%s: %s' % (self._name, stats)
     
     def syncronize_clock(self, scx, scy, x, y):
+        self._local_start = self._reactor.monotonic()
         mcu_clock = self._ffi_lib.stepcompress_had_position(scx, scy, x, y, 20, self._clocksync.print_time_to_clock(3))
         self._mcu_start = mcu_clock
-        self._local_start = self._reactor.monotonic()
 
-    def test_position()
+    def test_position(self):
+        x, y = self.Encoder_count1/ENC_PULSES_PER_STEP, self.Encoder_count2/ENC_PULSES_PER_STEP
+        clock = self._mcu_start + self._clocksync.print_time_to_clock(self._reactor.monotonic() - self._local_start)
+        kin = self._printer.lookup_object('toolhead').kin
+        sx = kin.rails[0].get_steppers()[0]
+        sy = kin.rails[0].get_steppers()[0]
+        ex = sx.get_past_mcu_position(clock)
+        ey = sy.get_past_mcu_position(clock)
+        print(f"Expected x: {ex} got x: {x}\nExpected y: {ey} got y: {y}")
+    
+    def _register_homing(self):
+        self.Encoder_count1 = 0
+        self.Encoder_count2 = 0
+        self.Encoder_count3 = 0
+
+
+
 
 Common_MCU_errors = {
     ("Timer too close",): """
