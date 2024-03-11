@@ -11,6 +11,24 @@ from time import sleep
 class error(Exception):
     pass
 
+ # Defining the GPIO Pins for the Rotary Encoders
+global Encoder_A1
+Encoder_A1 = 5	# Encoder 1: GPIO Pin for Encoder Input A
+
+global Encoder_B1
+Encoder_B1 = 6	# Encoder 1: GPIO Pin for Encoder Input B
+
+global Encoder_A2
+Encoder_A2 = 13	# Encoder 2: GPIO Pin for Encoder Input A
+
+global Encoder_B2
+Encoder_B2 = 27	# Encoder 2: GPIO Pin for Encoder Input B
+
+global Encoder_A3
+Encoder_A3 = 22	# Encoder 3: GPIO Pin for Encoder Input A
+
+global Encoder_B3
+Encoder_B3 = 25 # Encoder 3: GPIO Pin for Encoder Input B
 
 ######################################################################
 # Command transmit helper classes
@@ -525,6 +543,7 @@ class MCU_adc:
 
 class MCU:
     error = error
+
     def __init__(self, config, clocksync):
         self._printer = printer = config.get_printer()
         self._clocksync = clocksync
@@ -596,16 +615,6 @@ class MCU:
     
     def rotary_encoders_setup(self):
 
-        # Defining the GPIO Pins for the Rotary Encoders
-        Encoder_A1 = 5	# Encoder 1: GPIO Pin for Encoder Input A
-        Encoder_B1 = 6	# Encoder 1: GPIO Pin for Encoder Input B
-
-        Encoder_A2 = 13	# Encoder 2: GPIO Pin for Encoder Input A
-        Encoder_B2 = 27	# Encoder 2: GPIO Pin for Encoder Input B
-
-        Encoder_A3 = 22	# Encoder 3: GPIO Pin for Encoder Input A
-        Encoder_B3 = 25 # Encoder 3: GPIO Pin for Encoder Input B
-
         # Initializing the Encoder Count Variables 
         self.Encoder_count1 = 0	# Rotary Encoder 1 Counter 
         self.Encoder_count2 = 0	# Rotary Encoder 2 Counter 
@@ -627,48 +636,48 @@ class MCU:
         GPIO.setup(Encoder_A3, GPIO.IN)
         GPIO.setup(Encoder_B3, GPIO.IN)
 
-        # Registering the Interrupt Handlers
+        # Registering the Interrupt Handlers events
         # Interrupts would be used for the setting up of the callback thread for the A and B inputs of each encoder
-        GPIO.add_event_detect(Encoder_A1, GPIO.RISING, callback=self.interrupt_xup, bouncetime=10)	# The interrupts should be triggered when there is a rising edge detected on the GPIO pins
-        GPIO.add_event_detect(Encoder_B1, GPIO.RISING, callback=self.interrupt_xdown, bouncetime=10)
+        GPIO.add_event_detect(Encoder_A1, GPIO.RISING, callback=(lambda : self.interrupt_xup), bouncetime=10)	# The interrupts should be triggered when there is a rising edge detected on the GPIO pins
+        GPIO.add_event_detect(Encoder_B1, GPIO.RISING, callback=(lambda : self.interrupt_xdown), bouncetime=10)
         
-        GPIO.add_event_detect(Encoder_A2, GPIO.RISING, callback=self.interrupt_yup, bouncetime=10)
-        GPIO.add_event_detect(Encoder_B2, GPIO.RISING, callback=self.interrupt_ydown, bouncetime=10)
+        GPIO.add_event_detect(Encoder_A2, GPIO.RISING, callback=(lambda : self.interrupt_yup), bouncetime=10)
+        GPIO.add_event_detect(Encoder_B2, GPIO.RISING, callback=(lambda : self.interrupt_ydown), bouncetime=10)
         
-        GPIO.add_event_detect(Encoder_A3, GPIO.RISING, callback=self.interrupt_zup, bouncetime=10)
-        GPIO.add_event_detect(Encoder_B3, GPIO.RISING, callback=self.interrupt_zdown, bouncetime=10)
+        GPIO.add_event_detect(Encoder_A3, GPIO.RISING, callback=(lambda : self.interrupt_zup), bouncetime=10)
+        GPIO.add_event_detect(Encoder_B3, GPIO.RISING, callback=(lambda : self.interrupt_zdown), bouncetime=10)
 
     # Two parameters in the Interrupt Functions:
     # self: Refers to the instance of the MCU class, in order to get access to the methods and instance variables of the MCU class 
     # channel: Represents the GPIO pin channel triggering the interrupt, and gives information about which encoder's input has caused the interrupt shown  
 
     # Up/Down Functions that update the rotary encoder counts based on the interrupt events for the X axis
-    def interrupt_xup(self, channel):
+    def interrupt_xup(self):
         self.Encoder_count1 += 1
             
-    def interrupt_xdown(self, channel):
+    def interrupt_xdown(self):
         self.Encoder_count1 -= 1
             
     # Up/Down Functions that update the rotary encoder counts based on the interrupt events for the Y axis
-    def interrupt_yup(self, channel):
+    def interrupt_yup(self):
         self.Encoder_count2 += 1
             
-    def interrupt_ydown(self, channel):
+    def interrupt_ydown(self):
         self.Encoder_count2 -= 1
 
     # Up/Down Functions that update the rotary encoder counts based on the interrupt events for the Z axis
-    def interrupt_zup(self, channel):
+    def interrupt_zup(self):
         self.Encoder_count3 += 1
             
-    def interrupt_zdown(self, channel):
+    def interrupt_zdown(self):
         self.Encoder_count3 -= 1
 
-
-        # feedback init
+        # Feedback Init
         self._is_synced =  False
         self._mcu_start = 0
         self._local_start = 0
-    # Serial callbacks
+
+    # Serial Callbacks
     def _handle_mcu_stats(self, params):
         count = params['count']
         tick_sum = params['sum']
@@ -1054,7 +1063,8 @@ class MCU:
         self._mcu_start = mcu_clock
         self._local_start = self._reactor.monotonic()
 
-    def test_position()
+    def test_position():
+        pass
 
 Common_MCU_errors = {
     ("Timer too close",): """
