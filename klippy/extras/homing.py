@@ -272,6 +272,7 @@ class PrinterHoming:
                     "Homing failed due to printer shutdown")
             self.printer.lookup_object('stepper_enable').motor_off()
             raise
+        self.printer.send_event("homing:complete")
 
 def load_config(config):
     return PrinterHoming(config)
