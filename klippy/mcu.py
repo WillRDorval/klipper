@@ -611,8 +611,7 @@ class MCU:
         printer.register_event_handler("klippy:shutdown", self._shutdown)
         printer.register_event_handler("klippy:disconnect", self._disconnect)
 
-    # GPIO Setup into mcu.py file
-    
+    # Setup for Rotary Encoders Method
     def rotary_encoders_setup(self):
 
         # Initializing the Encoder Count Variables 
