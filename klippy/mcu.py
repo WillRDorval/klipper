@@ -1076,6 +1076,7 @@ class MCU:
         self._local_start = self._reactor.monotonic()
         mcu_clock = self._ffi_lib.stepcompress_had_position(scx, scy, x, y, 20, self._clocksync.print_time_to_clock(3))
         self._mcu_start = mcu_clock
+        self._reactor.update_timer(self._update_callback, self._reactor.NOW)
 
     def test_position(self, eventtimer):
         x, y = self.Encoder_count1/ENC_PULSES_PER_STEP, self.Encoder_count2/ENC_PULSES_PER_STEP
