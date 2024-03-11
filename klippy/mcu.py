@@ -613,6 +613,12 @@ class MCU:
         printer.register_event_handler("klippy:shutdown", self._shutdown)
         printer.register_event_handler("klippy:disconnect", self._disconnect)
 
+        printer.regsiter_event_handler("homing:complete", self._register_homing)
+
+        self._update_callback = self._reactor.register_timer(self.test_position)
+
+
+
     # GPIO Setup into mcu.py file
     
     def rotary_encoders_setup(self):
@@ -1071,7 +1077,7 @@ class MCU:
         mcu_clock = self._ffi_lib.stepcompress_had_position(scx, scy, x, y, 20, self._clocksync.print_time_to_clock(3))
         self._mcu_start = mcu_clock
 
-    def test_position(self):
+    def test_position(self, eventtimer):
         x, y = self.Encoder_count1/ENC_PULSES_PER_STEP, self.Encoder_count2/ENC_PULSES_PER_STEP
         clock = self._mcu_start + self._clocksync.print_time_to_clock(self._reactor.monotonic() - self._local_start)
         kin = self._printer.lookup_object('toolhead').kin
@@ -1080,6 +1086,7 @@ class MCU:
         ex = sx.get_past_mcu_position(clock)
         ey = sy.get_past_mcu_position(clock)
         print(f"Expected x: {ex} got x: {x}\nExpected y: {ey} got y: {y}")
+        return eventtimer + 0.487
     
     def _register_homing(self):
         self.Encoder_count1 = 0
