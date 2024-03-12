@@ -1091,7 +1091,7 @@ class MCU:
         sy = kin.rails[0].get_steppers()[0]
         ex = sx.get_past_mcu_position(clock)
         ey = sy.get_past_mcu_position(clock)
-        print(f"Expected x: {ex} got x: {x}\nExpected y: {ey} got y: {y}")
+        logging.info(f"Expected x: {ex} got x: {x}\nExpected y: {ey} got y: {y}")
         if (ex-x)**2 + (ey-y)**2 > ACCEPTABLE_ERROR:
             self._printer.lookup_object("gcode").run_script("PAUSE")
         return eventtimer + 0.487
