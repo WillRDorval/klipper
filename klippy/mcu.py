@@ -9,6 +9,7 @@ import RPi.GPIO as GPIO # Python Library Needed
 from time import sleep
 
 ENC_PULSES_PER_STEP = 3
+ACCEPTABLE_ERROR = 99999999999999999999999999999
 
 class error(Exception):
     pass
@@ -31,6 +32,8 @@ Encoder_A3 = 22	# Encoder 3: GPIO Pin for Encoder Input A
 
 global Encoder_B3
 Encoder_B3 = 25 # Encoder 3: GPIO Pin for Encoder Input B
+
+
 
 ######################################################################
 # Command transmit helper classes
@@ -1089,6 +1092,8 @@ class MCU:
         ex = sx.get_past_mcu_position(clock)
         ey = sy.get_past_mcu_position(clock)
         print(f"Expected x: {ex} got x: {x}\nExpected y: {ey} got y: {y}")
+        if (ex-x)**2 + (ey-y)**2 > ACCEPTABLE_ERROR:
+            self._printer.lookup_object("gcode").run_script("PAUSE")
         return eventtimer + 0.487
     
     def _register_homing(self):
