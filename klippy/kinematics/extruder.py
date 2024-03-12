@@ -135,9 +135,9 @@ class PrinterExtruder:
         self.name = config.get_name()
         self.last_position = 0.
         # Setup hotend heater
-        pheaters = self.printer.load_object(config, 'heaters')
-        gcode_id = 'T%d' % (extruder_num,)
-        self.heater = pheaters.setup_heater(config, gcode_id)
+        # pheaters = self.printer.load_object(config, 'heaters')
+        # gcode_id = 'T%d' % (extruder_num,)
+        # self.heater = pheaters.setup_heater(config, gcode_id)
         # Setup kinematic checks
         self.nozzle_diameter = config.getfloat('nozzle_diameter', above=0.)
         filament_diameter = config.getfloat(
@@ -185,25 +185,29 @@ class PrinterExtruder:
     def update_move_time(self, flush_time, clear_history_time):
         self.trapq_finalize_moves(self.trapq, flush_time, clear_history_time)
     def get_status(self, eventtime):
-        sts = self.heater.get_status(eventtime)
-        sts['can_extrude'] = self.heater.can_extrude
+        # sts = self.heater.get_status(eventtime)
+        sts = {}
+        sts['can_extrude'] = True
         if self.extruder_stepper is not None:
             sts.update(self.extruder_stepper.get_status(eventtime))
         return sts
     def get_name(self):
         return self.name
+
     def get_heater(self):
-        return self.heater
+        # return self.heater
+        None
     def get_trapq(self):
         return self.trapq
     def stats(self, eventtime):
-        return self.heater.stats(eventtime)
+        #return self.heater.stats(eventtime)
+        return {}
     def check_move(self, move):
         axis_r = move.axes_r[3]
-        if not self.heater.can_extrude:
-            raise self.printer.command_error(
-                "Extrude below minimum temp\n"
-                "See the 'min_extrude_temp' config option for details")
+        #if not self.heater.can_extrude:
+        #    raise self.printer.command_error(
+        #        "Extrude below minimum temp\n"
+        #        "See the 'min_extrude_temp' config option for details")
         if (not move.axes_d[0] and not move.axes_d[1]) or axis_r < 0.:
             # Extrude only move (or retraction move) - limit accel and velocity
             if abs(move.axes_d[3]) > self.max_e_dist:
