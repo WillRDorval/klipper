@@ -616,7 +616,7 @@ class MCU:
         printer.register_event_handler("klippy:shutdown", self._shutdown)
         printer.register_event_handler("klippy:disconnect", self._disconnect)
 
-        printer.regsiter_event_handler("homing:complete", self._register_homing)
+        printer.register_event_handler("homing:complete", self._register_homing)
 
         self._update_callback = self._reactor.register_timer(self.test_position)
 
