@@ -617,6 +617,8 @@ class MCU:
 
         self._update_callback = self._reactor.register_timer(self.test_position)
 
+        self.rotary_encoders_setup()
+
 
 
     # GPIO Setup into mcu.py file
