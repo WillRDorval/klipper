@@ -1043,7 +1043,7 @@ class MCU:
         kin = self._printer.lookup_object('toolhead').kin
         sx = kin.rails[0].get_steppers()[0]._stepqueue
         sy = kin.rails[0].get_steppers()[0]._stepqueue
-        x, y = self.Encoder_count1/ENC_PULSES_PER_STEP, self.Encoder_count2/ENC_PULSES_PER_STEP
+        x, y = int(self.Encoder_count1/ENC_PULSES_PER_STEP), int(self.Encoder_count2/ENC_PULSES_PER_STEP)
         self.syncronize_clock(sx, sy, x, y)
 
     def check_active(self, print_time, eventtime):
