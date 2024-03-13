@@ -701,6 +701,7 @@ class MCU:
         self._mcu_tick_stddev = c * math.sqrt(max(0., diff))
         self._mcu_tick_awake = tick_sum / self._mcu_freq
     def _handle_shutdown(self, params):
+        GPIO.cleanup()
         if self._is_shutdown:
             return
         self._is_shutdown = True

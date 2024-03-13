@@ -45,6 +45,7 @@ defs_stepcompress = """
     int stepcompress_reset(struct stepcompress *sc, uint64_t last_step_clock);
     int stepcompress_set_last_position(struct stepcompress *sc
         , uint64_t clock, int64_t last_position);
+    int stepcompress_had_position(struct stepcompress *scx, struct stepcompress *scy, int64_t x, int64_t y, int64_t err, uint64_t clock);
     int64_t stepcompress_find_past_position(struct stepcompress *sc
         , uint64_t clock);
     int stepcompress_queue_msg(struct stepcompress *sc
@@ -62,6 +63,7 @@ defs_stepcompress = """
         , double time_offset, double mcu_freq);
     int steppersync_flush(struct steppersync *ss, uint64_t move_clock
         , uint64_t clear_history_clock);
+    
 """
 
 defs_itersolve = """
