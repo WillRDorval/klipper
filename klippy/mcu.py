@@ -651,38 +651,38 @@ class MCU:
 
         # Registering the Interrupt Handlers events
         # Interrupts would be used for the setting up of the callback thread for the A and B inputs of each encoder
-        GPIO.add_event_detect(Encoder_A1, GPIO.RISING, callback=(lambda : self.interrupt_xup), bouncetime=10)	# The interrupts should be triggered when there is a rising edge detected on the GPIO pins
-        GPIO.add_event_detect(Encoder_B1, GPIO.RISING, callback=(lambda : self.interrupt_xdown), bouncetime=10)
+        GPIO.add_event_detect(Encoder_A1, GPIO.RISING, callback=self.interrupt_xup, bouncetime=10)	# The interrupts should be triggered when there is a rising edge detected on the GPIO pins
+        GPIO.add_event_detect(Encoder_B1, GPIO.RISING, callback=self.interrupt_xdown, bouncetime=10)
         
-        GPIO.add_event_detect(Encoder_A2, GPIO.RISING, callback=(lambda : self.interrupt_yup), bouncetime=10)
-        GPIO.add_event_detect(Encoder_B2, GPIO.RISING, callback=(lambda : self.interrupt_ydown), bouncetime=10)
+        GPIO.add_event_detect(Encoder_A2, GPIO.RISING, callback=self.interrupt_yup, bouncetime=10)
+        GPIO.add_event_detect(Encoder_B2, GPIO.RISING, callback=self.interrupt_ydown, bouncetime=10)
         
-        GPIO.add_event_detect(Encoder_A3, GPIO.RISING, callback=(lambda : self.interrupt_zup), bouncetime=10)
-        GPIO.add_event_detect(Encoder_B3, GPIO.RISING, callback=(lambda : self.interrupt_zdown), bouncetime=10)
+        GPIO.add_event_detect(Encoder_A3, GPIO.RISING, callback=self.interrupt_zup, bouncetime=10)
+        GPIO.add_event_detect(Encoder_B3, GPIO.RISING, callback=self.interrupt_zdown, bouncetime=10)
 
     # Two parameters in the Interrupt Functions:
     # self: Refers to the instance of the MCU class, in order to get access to the methods and instance variables of the MCU class 
     # channel: Represents the GPIO pin channel triggering the interrupt, and gives information about which encoder's input has caused the interrupt shown  
 
     # Up/Down Functions that update the rotary encoder counts based on the interrupt events for the X axis
-    def interrupt_xup(self):
+    def interrupt_xup(self, _):
         self.Encoder_count1 += 1
             
-    def interrupt_xdown(self):
+    def interrupt_xdown(self, _):
         self.Encoder_count1 -= 1
             
     # Up/Down Functions that update the rotary encoder counts based on the interrupt events for the Y axis
-    def interrupt_yup(self):
+    def interrupt_yup(self, _):
         self.Encoder_count2 += 1
             
-    def interrupt_ydown(self):
+    def interrupt_ydown(self, _):
         self.Encoder_count2 -= 1
 
     # Up/Down Functions that update the rotary encoder counts based on the interrupt events for the Z axis
-    def interrupt_zup(self):
+    def interrupt_zup(self, _):
         self.Encoder_count3 += 1
             
-    def interrupt_zdown(self):
+    def interrupt_zdown(self, _):
         self.Encoder_count3 -= 1
 
         # Feedback Init
