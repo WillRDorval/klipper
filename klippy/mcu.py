@@ -640,25 +640,25 @@ class MCU:
         # Each Rotary Encoder will have 2 GPIO Pins, one for each input basically
         # GPIO pins are defined here that will be connected to the rotary encoder
         # The rotational movements of the encoder shaft will be found with the use of these pins
-        GPIO.setup(Encoder_A1, GPIO.IN)
-        GPIO.setup(Encoder_B1, GPIO.IN)
+        GPIO.setup(Encoder_A1, GPIO.IN, pull_up_down=GPIO.PUD_UP)
+        GPIO.setup(Encoder_B1, GPIO.IN, pull_up_down=GPIO.PUD_UP)
         
-        GPIO.setup(Encoder_A2, GPIO.IN)
-        GPIO.setup(Encoder_B2, GPIO.IN)
+        GPIO.setup(Encoder_A2, GPIO.IN, pull_up_down=GPIO.PUD_UP)
+        GPIO.setup(Encoder_B2, GPIO.IN, pull_up_down=GPIO.PUD_UP)
         
-        GPIO.setup(Encoder_A3, GPIO.IN)
-        GPIO.setup(Encoder_B3, GPIO.IN)
+        GPIO.setup(Encoder_A3, GPIO.IN, pull_up_down=GPIO.PUD_UP)
+        GPIO.setup(Encoder_B3, GPIO.IN, pull_up_down=GPIO.PUD_UP)
 
         # Registering the Interrupt Handlers events
         # Interrupts would be used for the setting up of the callback thread for the A and B inputs of each encoder
-        GPIO.add_event_detect(Encoder_A1, GPIO.RISING, callback=self.interrupt_xup, bouncetime=10)	# The interrupts should be triggered when there is a rising edge detected on the GPIO pins
-        GPIO.add_event_detect(Encoder_B1, GPIO.RISING, callback=self.interrupt_xdown, bouncetime=10)
+        GPIO.add_event_detect(Encoder_A1, GPIO.FALLING, callback=self.interrupt_xup, bouncetime=10)	# The interrupts should be triggered when there is a rising edge detected on the GPIO pins
+        GPIO.add_event_detect(Encoder_B1, GPIO.FALLING, callback=self.interrupt_xdown, bouncetime=10)
         
-        GPIO.add_event_detect(Encoder_A2, GPIO.RISING, callback=self.interrupt_yup, bouncetime=10)
-        GPIO.add_event_detect(Encoder_B2, GPIO.RISING, callback=self.interrupt_ydown, bouncetime=10)
+        GPIO.add_event_detect(Encoder_A2, GPIO.FALLING, callback=self.interrupt_yup, bouncetime=10)
+        GPIO.add_event_detect(Encoder_B2, GPIO.FALLING, callback=self.interrupt_ydown, bouncetime=10)
         
-        GPIO.add_event_detect(Encoder_A3, GPIO.RISING, callback=self.interrupt_zup, bouncetime=10)
-        GPIO.add_event_detect(Encoder_B3, GPIO.RISING, callback=self.interrupt_zdown, bouncetime=10)
+        GPIO.add_event_detect(Encoder_A3, GPIO.FALLING, callback=self.interrupt_zup, bouncetime=10)
+        GPIO.add_event_detect(Encoder_B3, GPIO.FALLING, callback=self.interrupt_zdown, bouncetime=10)
 
     # Two parameters in the Interrupt Functions:
     # self: Refers to the instance of the MCU class, in order to get access to the methods and instance variables of the MCU class 
