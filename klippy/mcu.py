@@ -1080,7 +1080,7 @@ class MCU:
     
     def syncronize_clock(self, scx, scy, x, y):
         self._local_start = self._reactor.monotonic()
-        mcu_clock = self._ffi_lib.stepcompress_had_position(scx, scy, x, y, 20, self._clocksync.print_time_to_clock(3))
+        mcu_clock = self._ffi_lib.stepcompress_had_position(scx, scy, x, y, 50, self._clocksync.print_time_to_clock(3))
         self._mcu_start = mcu_clock
         self._reactor.update_timer(self._update_callback, self._reactor.NOW)
 
@@ -1089,7 +1089,7 @@ class MCU:
         clock = self._mcu_start + self._clocksync.print_time_to_clock(self._reactor.monotonic() - self._local_start)
         kin = self._printer.lookup_object('toolhead').kin
         sx = kin.rails[0].get_steppers()[0]
-        sy = kin.rails[0].get_steppers()[0]
+        sy = kin.rails[0].get_steppers()[1]
         ex = sx.get_past_mcu_position(clock)
         ey = sy.get_past_mcu_position(clock)
         logging.info(f"Expected x: {ex} got x: {x}\nExpected y: {ey} got y: {y}")
