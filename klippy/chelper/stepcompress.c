@@ -60,8 +60,7 @@ struct step_move {
 struct history_steps {
     struct list_node node;
     uint64_t first_clock, last_clock;
-    int64_t start_position;
-    int step_count, interval, add;
+    int64_t step_count, interval, add, start_position;
 };
 
 
@@ -586,6 +585,7 @@ stepcompress_set_last_position(struct stepcompress *sc, uint64_t clock
 }
 
 
+
 // Search history to find if position x, y can be found in the past 'clock' clock cycles
 // of history in scx and scy with error margin err
 
@@ -738,6 +738,7 @@ stepcompress_had_position(struct stepcompress *scx, struct stepcompress *scy, in
     }
 
 }
+
 // Search history of moves to find a past position at a given clock
 int64_t __visible
 stepcompress_find_past_position(struct stepcompress *sc, uint64_t clock)
