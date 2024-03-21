@@ -159,8 +159,14 @@ class GCodeDispatch:
         prev_values[value] = func
     def get_command_help(self):
         return dict(self.gcode_help)
+    # Included the pause state information by updating the status reporting
     def get_status(self, eventtime):
-        return {'commands': self.status_commands}
+        # Initialized the status dictionary with the existing command info
+        status = {'commands': self.status_commands}
+        # Added the pause state info to the status dictionary, meaning it will allow the 3D Bioprinter to report its current status, whether if the printer is paused or not.
+        status['is_paused'] = self.is_paused
+        # Returns the updated status dictionary
+        return status
     def _build_status_commands(self):
         commands = {cmd: {} for cmd in self.gcode_handlers}
         for cmd in self.gcode_help:
@@ -364,6 +370,8 @@ class GCodeDispatch:
             if cmd in self.gcode_help:
                 cmdhelp.append("%-10s: %s" % (cmd, self.gcode_help[cmd]))
         gcmd.respond_info("\n".join(cmdhelp), log=False)
+
+    
 
 # Support reading gcode from a pseudo-tty interface
 class GCodeIO:
